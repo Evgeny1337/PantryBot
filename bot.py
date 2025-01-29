@@ -1,8 +1,7 @@
 import asyncio
 import logging
 import sys
-from os import getenv
-
+from os import environ
 from aiogram import Bot, Dispatcher, html
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -12,14 +11,30 @@ from handler import start_handler,create_order
 from callback import choose_type_callback,choose_price_callback,drop_state_callback,swith_month_callback,choose_first_date_callback,choose_last_date_callback
 from state import CreateOrder
 from aiogram import F
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from dotenv import load_dotenv
+from helpers import get_all_orders_expiring
+
+load_dotenv()
+TOKEN = environ['BOT_TOKEN']
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 
+async def send_notification():
+    orders = await get_all_orders_expiring()
+    for order in orders:
+        try:
+            await bot.send_message(chat_id=order.client.tg_id,
+                                   text='Приветсвуем!\nНапоминаем, '
+                                   'что сроки хранения подходят к концу.'
+                                   'Вещи со склада вы можете забрать до'
+                                   f'{order.end_storage.strftime('%d.%m.%Y')}')
+        except Exception:
+            print('Пользователь запретил отправлять ему сообщения')
 
 
 async def main() -> None:
-    TOKEN = ""
     dp = Dispatcher()
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp.message.register(start_handler,CommandStart())
     dp.message.register(create_order,F.text=="Создать заказ")
     dp.callback_query.register(drop_state_callback,F.data == 'exit')
@@ -34,3 +49,6 @@ async def main() -> None:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(send_notification, 'cron', hour=9)
+    scheduler.start()

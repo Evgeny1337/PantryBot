@@ -1,4 +1,5 @@
-from aiogram.fsm.state import StatesGroup,State
+from aiogram.fsm.state import StatesGroup, State
+
 
 class CreateOrder(StatesGroup):
     choose_type = State()
