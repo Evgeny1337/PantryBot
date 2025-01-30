@@ -22,7 +22,7 @@ class CellTariff(models.Model):
 class Cell(models.Model):
     cell_size = models.ForeignKey(CellTariff,
                                   on_delete=models.CASCADE)
-    is_occupied = models.BooleanField(null=True)         # Дебил, обрати внимание!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    is_occupied = models.BooleanField(default=False)         # Дебил, обрати внимание!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     address = models.ForeignKey(Warehouse, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -50,8 +50,8 @@ class Client(models.Model):
 class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     contacts = models.CharField(max_length=100, blank=True)
-    start_storage = models.DateTimeField()
-    end_storage = models.DateTimeField()
+    start_storage = models.DateField()
+    end_storage = models.DateField()
     address = models.CharField(max_length=200, blank=True)
     cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2,

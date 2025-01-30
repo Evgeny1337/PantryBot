@@ -28,25 +28,25 @@ def get_cell_price_by_id(id):
 @sync_to_async
 def get_orders_expiring_month():
     deadline = datetime.now() + timedelta(days=30)
-    return list(Order.objects.filter(end_storage__date=deadline.date()))
+    return list(Order.objects.filter(end_storage=deadline.date()))
 
 
 @sync_to_async
 def get_orders_expiring_two_weeks():
     deadline = datetime.now() + timedelta(weeks=2)
-    return list(Order.objects.filter(end_storage__date=deadline.date()))
+    return list(Order.objects.filter(end_storage=deadline.date()))
 
 
 @sync_to_async
 def get_orders_expiring_week():
     deadline = datetime.now() + timedelta(weeks=1)
-    return list(Order.objects.filter(end_storage__date=deadline.date()))
+    return list(Order.objects.filter(end_storage=deadline.date()))
 
 
 @sync_to_async
 def get_orders_expiring_three_days():
     deadline = datetime.now() + timedelta(days=3)
-    return list(Order.objects.filter(end_storage__date=deadline.date()))
+    return list(Order.objects.filter(end_storage=deadline.date()))
 
 
 async def get_all_orders_expiring():
