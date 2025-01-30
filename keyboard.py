@@ -38,7 +38,13 @@ async def choose_type_place():
             callback_data=f'choose_place_{warehouse.id}')])
     keyboard_buttons.append([types.InlineKeyboardButton(
         text="Отмена", callback_data="exit")])
-    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)    
+    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
+
+def approve_order():
+    keyboard_buttons = [[types.InlineKeyboardButton(text="Подтвердить заказ",callback_data='approve')],
+                        [types.InlineKeyboardButton(text="Отмена", callback_data="exit")]]
+    return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
 
 def create_calendar(year, month, type_callback):

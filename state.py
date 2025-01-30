@@ -7,3 +7,4 @@ class CreateOrder(StatesGroup):
     choose_start_date = State()
     choose_last_date = State()
     choose_place = State()
+    appove_order = State()

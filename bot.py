@@ -8,7 +8,7 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from handler import start_handler,create_order
-from callback import choose_type_callback,choose_price_callback,drop_state_callback,swith_month_callback,choose_first_date_callback,choose_last_date_callback
+from callback import choose_type_callback,choose_price_callback,drop_state_callback,swith_month_callback,choose_first_date_callback,choose_last_date_callback,choose_place_callback,approve_callback
 from state import CreateOrder
 from aiogram import F
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -28,7 +28,7 @@ async def send_notification():
                                    text='Приветсвуем!\nНапоминаем, '
                                    'что сроки хранения подходят к концу.'
                                    'Вещи со склада вы можете забрать до'
-                                   f'{order.end_storage.strftime('%d.%m.%Y')}')
+                                   f'{order.end_storage.strftime("%d.%m.%Y")}')
         except Exception:
             print('Пользователь запретил отправлять ему сообщения')
 
@@ -43,6 +43,8 @@ async def main() -> None:
     dp.callback_query.register(choose_price_callback,F.data.startswith('choose_cell_'),CreateOrder.choose_price)
     dp.callback_query.register(choose_first_date_callback,F.data.startswith('first_'),CreateOrder.choose_start_date)
     dp.callback_query.register(choose_last_date_callback,F.data.startswith('second_'),CreateOrder.choose_last_date)
+    dp.callback_query.register(choose_place_callback,F.data.startswith('choose_place_'),CreateOrder.choose_place)
+    dp.callback_query.register(approve_callback,F.data.startswith('approve'),CreateOrder.appove_order)
     await dp.start_polling(bot)
 
 
