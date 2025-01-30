@@ -74,27 +74,62 @@ async def choose_first_date_callback(callback:types.CallbackQuery,state:FSMConte
 async def choose_last_date_callback(callback:types.CallbackQuery,state:FSMContext):
     data = int(callback.data.split("_")[4])
     state_data = await state.get_data()
-    result_data = " ".join(['{} -> {}\n'.format(key,value) for key,value in state_data.items()])
-    await callback.message.delete()
-    if "isCurier" not in state_data:
-        await state.update_data({"day_last":data})
-        await state.set_state(CreateOrder.choose_place)
-        markup = await choose_type_place()
-        await callback.message.answer(text="Выберите пункт примеа",reply_markup=markup)
+    date_first = datetime.datetime(year=state_data['year_first'],
+                                   month=state_data['month_first'],
+                                   day=state_data['day_first'])
+    date_last = datetime.datetime(year=state_data['year_last'],
+                                  month=state_data['month_last'],
+                                  day=data)
+    if date_last > date_first:
+        day_count = (date_last - date_first).days
+        result_data = (
+            f'Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n'
+            f'Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{data}\n'
+            f'Общая сумма: {state_data['price'] * day_count} р.'
+        )
+        await callback.message.delete()
+        if "isCurier" not in state_data:
+            await state.update_data({"day_last":data})
+            await state.set_state(CreateOrder.choose_place)
+            markup = await choose_type_place()
+            await callback.message.answer(text="Выберите пункт примеа",reply_markup=markup)
+        else:
+            await state.update_data({"day_last":data})
+            await state.set_state(CreateOrder.appove_order)
+            await callback.message.answer("Завершите оформление\nДанные заказа:\n" + result_data,reply_markup=approve_order())
     else:
-        await state.update_data({"day_last":data})
-        await state.set_state(CreateOrder.appove_order)
-        await callback.message.answer("Завершите оформление\nДанные заказа:\n" + result_data,reply_markup=approve_order())
+        await callback.message.delete()
+        await state.set_state(CreateOrder.choose_last_date)
+        current_year = datetime.datetime.now().year
+        current_month = datetime.datetime.now().month
+        await callback.message.answer(text='Конечаная дата не коректна. Выберите снова', reply_markup=create_calendar(current_year,current_month,'second'))
 
 async def choose_place_callback(callback:types.CallbackQuery,state:FSMContext):
     data = int(callback.data.split("_")[2])
     state_data = await state.get_data()
-    #Русификацию добавлю
-    result_data = " ".join(['{} -> {}\n'.format(key,value) for key,value in state_data.items()])
-    await callback.message.delete()
-    await state.set_state(CreateOrder.appove_order)
-    await state.update_data({"place":data})
-    await callback.message.answer("Завершите оформление\nДанные заказа:\n" + result_data,reply_markup=approve_order())
+    date_first = datetime.datetime(year=state_data['year_first'],
+                                   month=state_data['month_first'],
+                                   day=state_data['day_first'])
+    date_last = datetime.datetime(year=state_data['year_last'],
+                                  month=state_data['month_last'],
+                                  day=state_data['day_last'])
+    if date_last > date_first:
+        day_count = (date_last - date_first).days
+        result_data = (
+            f'Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n'
+            f'Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{state_data['day_last']}\n'
+            f'Общая сумма: {state_data['price'] * day_count} р.'
+        )
+        await callback.message.delete()
+        await state.set_state(CreateOrder.appove_order)
+        await state.update_data({"place":data})
+        await callback.message.answer("Завершите оформление\nДанные заказа:\n" + result_data,reply_markup=approve_order())
+    else:
+        await callback.message.delete()
+        await state.set_state(CreateOrder.choose_last_date)
+        current_year = datetime.datetime.now().year
+        current_month = datetime.datetime.now().month
+        await callback.message.answer(text='Конечаная дата не коректна. Выберите снова', reply_markup=create_calendar(current_year,current_month,'second'))
 
 async def approve_callback(callback:types.CallbackQuery,state:FSMContext):
     await callback.message.delete()
