@@ -1,10 +1,11 @@
 from django.contrib import admin
-from .models import Cell, CellTariff, Client, Order, Warehouse
+from .models import Cell, CellTariff, Client, Order, Warehouse, ClickCounter
 
 admin.site.register(Client)
 admin.site.register(Cell)
 admin.site.register(CellTariff)
 admin.site.register(Warehouse)
+admin.site.register(ClickCounter)
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

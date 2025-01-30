@@ -71,3 +71,8 @@ def create_calendar(year, month, type_callback):
         text="Отмена", callback_data="exit")]]
 
     return types.InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
+
+def exit_button():
+    return types.InlineKeyboardMarkup(inline_keyboard=[[types.InlineKeyboardButton(
+        text="Отмена", callback_data="exit")]])

@@ -1,8 +1,8 @@
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 from state import CreateOrder
-from keyboard import choose_type_cell, create_calendar, choose_type_place, approve_order
-from helpers import get_cell_price_by_id
+from keyboard import choose_type_cell, create_calendar, choose_type_place, approve_order, exit_button
+from helpers import get_cell_price_by_id, create_order
 import datetime
 
 
@@ -95,8 +95,8 @@ async def choose_last_date_callback(callback:types.CallbackQuery,state:FSMContex
             await callback.message.answer(text="Выберите пункт примеа",reply_markup=markup)
         else:
             await state.update_data({"day_last":data})
-            await state.set_state(CreateOrder.appove_order)
-            await callback.message.answer("Завершите оформление\nДанные заказа:\n" + result_data,reply_markup=approve_order())
+            await state.set_state(CreateOrder.fill_contact)
+            await callback.message.answer(text='Введите контактные данные и адрес', reply_markup=exit_button())
     else:
         await callback.message.delete()
         await state.set_state(CreateOrder.choose_last_date)
@@ -133,10 +133,15 @@ async def choose_place_callback(callback:types.CallbackQuery,state:FSMContext):
 
 async def approve_callback(callback:types.CallbackQuery,state:FSMContext):
     await callback.message.delete()
-    #Добавить сохранение в бд
+    data = await state.get_data()
+    tg_id = callback.from_user.id
+    order = await create_order(data, tg_id)
     await state.clear()
-    await callback.message.answer("Вы создали заказ")
-    
+    if order:
+        await callback.message.answer("Вы создали заказ")
+    else:
+        await callback.message.answer("Такая ячейка уже занята")
+
 
 async def drop_state_callback(callback:types.CallbackQuery,state:FSMContext):
     await state.clear()

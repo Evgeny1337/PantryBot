@@ -22,7 +22,7 @@ class CellTariff(models.Model):
 class Cell(models.Model):
     cell_size = models.ForeignKey(CellTariff,
                                   on_delete=models.CASCADE)
-    is_occupied = models.BooleanField(default=False)         # Дебил, обрати внимание!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    is_occupied = models.BooleanField(default=False)
     address = models.ForeignKey(Warehouse, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -52,11 +52,9 @@ class Order(models.Model):
     contacts = models.CharField(max_length=100, blank=True)
     start_storage = models.DateField()
     end_storage = models.DateField()
-    address = models.CharField(max_length=200, blank=True)
     cell = models.ForeignKey(Cell, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2,
                                       blank=True, null=True)
-    message_count = models.IntegerField()
 
     def __str__(self):
         return f'{self.client.client_name}, {self.contacts}'
@@ -66,3 +64,10 @@ class Order(models.Model):
         days = (self.end_storage - self.start_storage).days
         self.total_price = days * price_per_day
         super().save(*args, **kwargs)
+
+
+class ClickCounter(models.Model):
+    clicks = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.clicks}"
