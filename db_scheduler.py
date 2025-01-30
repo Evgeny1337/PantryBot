@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              'self_storage'))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'self_storage.settings')
 django.setup()
-from storage.models import Order, ClickCounter
+from storage.models import Order, ClickCounter, Cell
 
 
 def get_expired_orders():
@@ -21,8 +21,9 @@ def get_expired_orders():
 def clean_db():
     expired_orders = get_expired_orders()
     if expired_orders.exists():
-        expired_orders.update(cell__is_occupied=False)
+        Cell.objects.filter(id__in=expired_orders.values_list('cell_id', flat=True)).update(is_occupied=False)
         expired_orders.delete()
+        print("все устаревшие записи удалены")
 
 
 def update_clicks():
@@ -41,7 +42,6 @@ def update_clicks():
     response.raise_for_status()
     api_response = response.json()
     if 'error' in api_response:
-        print('qweqweqweqweqweqweq')
         return
     views = int(api_response['response']['stats'][0]['views'])
     counter.clicks = views
@@ -51,7 +51,7 @@ def update_clicks():
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(clean_db, 'cron', hour=9)
+    scheduler.add_job(clean_db, 'interval', minutes=1)
     scheduler.add_job(update_clicks, 'interval', minutes=1)
     scheduler.start()
 
