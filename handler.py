@@ -44,10 +44,10 @@ async def fill_contact(message:types.Message,state:FSMContext):
                                   day=state_data['day_last'])
     day_count = (date_last - date_first).days
     result_data = (
-        f'Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n'
-        f'Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{'day_last'}\n'
-        f'Общая сумма: {state_data['price'] * day_count} р.\n'
-        f'Контактные данные: {message.text}'
+        f"Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n"
+        f"Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{'day_last'}\n"
+        f"Общая сумма: {state_data['price'] * day_count} р.\n"
+        f"Контактные данные: {message.text}"
     )
     await state.update_data({'contact': message.text})
     await message.answer("Завершите оформление\nДанные заказа:\n" + result_data,reply_markup=approve_order())

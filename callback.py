@@ -83,9 +83,9 @@ async def choose_last_date_callback(callback:types.CallbackQuery,state:FSMContex
     if date_last > date_first:
         day_count = (date_last - date_first).days
         result_data = (
-            f'Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n'
-            f'Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{data}\n'
-            f'Общая сумма: {state_data['price'] * day_count} р.'
+            f"Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n"
+            f"Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{data}\n"
+            f"Общая сумма: {state_data['price'] * day_count} р."
         )
         await callback.message.delete()
         if "isCurier" not in state_data:
@@ -116,9 +116,9 @@ async def choose_place_callback(callback:types.CallbackQuery,state:FSMContext):
     if date_last > date_first:
         day_count = (date_last - date_first).days
         result_data = (
-            f'Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n'
-            f'Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{state_data['day_last']}\n'
-            f'Общая сумма: {state_data['price'] * day_count} р.'
+            f"Дата начала хранения: {state_data['year_first']}.{state_data['month_first']}.{state_data['day_first']}\n"
+            f"Дата конца хранения: {state_data['year_last']}.{state_data['month_last']}.{state_data['day_last']}\n"
+            f"Общая сумма: {state_data['price'] * day_count} р."
         )
         await callback.message.delete()
         await state.set_state(CreateOrder.appove_order)
